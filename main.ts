@@ -1,15 +1,26 @@
-import { mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
-// The second sentence adds no new monster; it moves the one already there.
-// The ritual is the trap: teaching her to look is what lets it answer.
-// Two-Sentence Horror: exactly two sentences, at most 400 characters.
-// The second sentence turns the first — the ritual the parent taught
-// the child is the thing the monster now uses against the parent.
-const STORY =
-  "I taught my daughter to check under her bed every night, so she would know the monsters were only in her head. Tonight she came back and told me the thing under her bed said to check under mine.";
+// A monster story told as a parenting tip: the safety drill itself is the invitation.
+// The scare lands on the last four words, when the check the parent taught gets turned back on them.
 
-const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
-mkdirSync(outDir, { recursive: true });
-for (const f of readdirSync(outDir)) rmSync(join(outDir, f), { recursive: true, force: true });
-writeFileSync(join(outDir, "entry.txt"), STORY + "\n", "utf8");
+const FIRST =
+  "I taught my daughter to check under her bed every night, so she would know the monsters were only in her head.";
+const SECOND =
+  "Tonight she came back and told me the thing under her bed said to check under mine.";
+
+function emptyFolder(dir: string): void {
+  for (const name of fs.readdirSync(dir)) {
+    fs.rmSync(path.join(dir, name), { recursive: true, force: true });
+  }
+}
+
+function run(): void {
+  const target = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
+  fs.mkdirSync(target, { recursive: true });
+  emptyFolder(target);
+  const text = FIRST + " " + SECOND + "\n";
+  fs.writeFileSync(path.join(target, "entry.txt"), text, "utf8");
+}
+
+run();
